@@ -1,3 +1,6 @@
+// Modified script from Andrew Hedges. The location of the original script is:
+// http://andrew.hedges.name/experiments/haversine/
+
 
 /*
 	This script is pretty basic, but if you use it, please let me know.  Thanks!
@@ -6,8 +9,10 @@
   
 var distance = {
 
-  "Rm" : 3961, // mean radius of the earth (miles) at 39 degrees from the equator
-  "Rk" : 6373, // mean radius of the earth (km) at 39 degrees from the equator
+  Rm : 3961, // mean radius of the earth (miles) at 39 degrees from the equator
+  Rk : 6373, // mean radius of the earth (km) at 39 degrees from the equator
+  
+  mileConv : 0.621371, // conversion factor from km to mi
   
   
   // convert degrees to radians
@@ -50,6 +55,10 @@ var distance = {
   
     // display the result
     return dist;
+  },
+  
+  toMiles: function(speed) {
+    return speed * this.mileConv;
   }
 
 };

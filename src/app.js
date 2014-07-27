@@ -14,7 +14,7 @@ var main = new UI.Card({
   title: 'Pebble.js',
   icon: 'images/menu_icon.png',
   //subtitle: 'Hello World!',
-  body: 'Press down button to update'
+  body: '\nPress down button to begin tracking'
 });
 
 main.show();
@@ -23,7 +23,7 @@ main.on('click', 'up', function(e) {
   var menu = new UI.Menu({
     sections: [{
       items: [{
-        title: 'Pebble.js',
+        title: 'GPS: ?',
         icon: 'images/menu_icon.png',
         subtitle: 'Can do Menus'
       }, {
@@ -40,6 +40,6 @@ main.on('click', 'up', function(e) {
 });
 
 main.on('click', 'down', function(e) {
-  console.log("down");
+  // Get data from watch and update the UI
   gps.getLocation(main);
 });
