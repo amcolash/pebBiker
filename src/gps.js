@@ -3,7 +3,6 @@ var distance = require('distance');
 
 // Global variables
 var myCard;
-var myPosition;
 var prevLat = -1;
 var prevLong = -1;
 var currLat = -1;
@@ -15,9 +14,7 @@ var altitude = -1;
 var accuracy = -1;
 
 var imperial = true;
-var units = ["", ""];
-var timer = 5000;
-var count = 0;
+var units = [];
 
 var gps = {
 
@@ -32,7 +29,6 @@ var gps = {
   },
   
   showPosition : function(position) {
-    myPosition = position;
     prevLat = currLat;
     prevLong = currLong;
     currLat = position.coords.latitude;
@@ -63,13 +59,15 @@ var gps = {
     speed *= 3600;
     
     if (imperial) {
-      units[0] = "mi";
-      units[1] = "mph";
+      units[0] = "ft";
+      units[1] = "mi";
+      units[2] = "mph";
       // Convert km/s to mi/hr
       speed = distance.toMiles(speed);
     } else {
-      units[0] = "km";
-      units[1] = "kmh";
+      units[0] = "m";
+      units[1] = "km";
+      units[2] = "kmh";
     }
     
     // Log information and update UI
@@ -79,14 +77,8 @@ var gps = {
     console.log("Heading: " + heading);
     console.log("Altitude: " + altitude);
     console.log("Accuracy: " + accuracy);
-    myCard.body("Curr:\n" + currLat + "\n" + currLong + "\nDistance: " + totalDistance + " " + units[0] +
-                  "\nHeading: " + heading + "\nSpeed: " + speed + " " + units[1]);
-    
-    count++;
-    myCard.title("GPS: " + count);
-    
-    // Not best practice, but for now just a simple timer loop
-    setInterval(gps.getLocation(myCard), this.timer);
+    myCard.body("Curr:\n" + currLat + "\n" + currLong + "\nDistance: " + totalDistance + " " + units[1] +
+                  "\nHeading: " + heading + "\nSpeed: " + speed + " " + units[2]);
   },
   
   showError : function(error) {

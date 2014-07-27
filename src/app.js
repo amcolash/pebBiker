@@ -11,7 +11,7 @@ var gps = require('gps');
 
 /* Main function and intiialization */
 var main = new UI.Card({
-  title: 'Pebble.js',
+  title: 'GPS: ?',
   icon: 'images/menu_icon.png',
   //subtitle: 'Hello World!',
   body: '\nPress down button to begin tracking'
@@ -23,7 +23,7 @@ main.on('click', 'up', function(e) {
   var menu = new UI.Menu({
     sections: [{
       items: [{
-        title: 'GPS: ?',
+        title: 'Pebble.js',
         icon: 'images/menu_icon.png',
         subtitle: 'Can do Menus'
       }, {
@@ -42,4 +42,16 @@ main.on('click', 'up', function(e) {
 main.on('click', 'down', function(e) {
   // Get data from watch and update the UI
   gps.getLocation(main);
+});
+
+var update = function() {
+  main.body("Updating");
+  setTimeout(function() {
+    gps.getLocation(main);
+    update();
+  }, 5000);
+};
+
+main.on('click', 'select', function(e) {
+  update();
 });
