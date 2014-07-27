@@ -22,6 +22,7 @@ var gps = {
     console.log("getLocation");
     myCard = card;
     if (navigator.geolocation) {
+      myCard.title("Updating");
       navigator.geolocation.getCurrentPosition(this.showPosition, this.showError);
     } else {
       myCard.body("Geolocation is not supported by this device.");
@@ -40,23 +41,28 @@ var gps = {
       prevLong = currLong;
     }
     
+    // Calculate distance from previous location to current location
+    totalDistance += distance.findDistance(prevLat, prevLong, currLat, currLong, imperial);
+    
     heading = position.coords.heading;
     speed = position.coords.speed;
     altitude = position.coords.altitude;
     accuracy = position.coords.accuracy;
     
-    // Calculate distance from previous location to current location
-    totalDistance += distance.findDistance(prevLat, prevLong, currLat, currLong, imperial);
+    // Set heading to unknown("?") instead of "-1"
+    if (heading === -1) {
+      heading = "?";
+    }
     
     // Set speed to 0 if not moving as -1 is returned normally
     if (speed === -1) {
       speed = 0;
+    } else {
+      // Convert m/s to km/s
+      speed /= 1000;
+      // Convert km/s to km/hr
+      speed *= 3600;
     }
-    
-    // Convert m/s to km/s
-    speed /= 1000;
-    // Convert km/s to km/hr
-    speed *= 3600;
     
     if (imperial) {
       units[0] = "ft";
@@ -64,11 +70,15 @@ var gps = {
       units[2] = "mph";
       // Convert km/s to mi/hr
       speed = distance.toMiles(speed);
+      // Convert altitude from m to ft
+      altitude = distance.toFeet(altitude);
     } else {
       units[0] = "m";
       units[1] = "km";
       units[2] = "kmh";
     }
+    
+    altitude = distance.round(altitude, 2);
     
     // Log information and update UI
     console.log("Current Latitude: " + currLat); 
@@ -77,7 +87,8 @@ var gps = {
     console.log("Heading: " + heading);
     console.log("Altitude: " + altitude);
     console.log("Accuracy: " + accuracy);
-    myCard.body("Curr:\n" + currLat + "\n" + currLong + "\nDistance: " + totalDistance + " " + units[1] +
+    myCard.title("pebBiker");
+    myCard.body("Dist: " + totalDistance + " " + units[1] + "\nAlt: " + altitude + " " + units[0] +
                   "\nHeading: " + heading + "\nSpeed: " + speed + " " + units[2]);
   },
   

@@ -13,6 +13,7 @@ var distance = {
   Rk : 6373, // mean radius of the earth (km) at 39 degrees from the equator
   
   mileConv : 0.621371, // conversion factor from km to mi
+  ftConv : 0.3048, // conversion factor from m to ft
   
   
   // convert degrees to radians
@@ -21,9 +22,9 @@ var distance = {
     return rad;
   },
     
-  // round to the nearest 1/10000
-  round : function(x) {
-    return Math.round( x * 10000) / 10000;
+  // round to given precision (decimal places)
+  round : function(num, precision) {
+    return Math.round( num * Math.pow(10, precision) ) / Math.pow(10, precision) ;
   },
 
   /* main function */
@@ -46,11 +47,11 @@ var distance = {
     dm = c * this.Rm; // great circle distance in miles
     dk = c * this.Rk; // great circle distance in km
   
-    // round the results down to the nearest 1/10000
+    // round the results down to the nearest 1/1000
     if (imperial) {
-      dist = this.round(dm);
+      dist = this.round(dm, 2);
     } else {
-      dist = this.round(dk);
+      dist = this.round(dk, 2);
     }
   
     // display the result
@@ -59,6 +60,10 @@ var distance = {
   
   toMiles: function(speed) {
     return speed * this.mileConv;
+  },
+  
+  toFeet: function(height) {
+    return height * this.ftConv;
   }
 
 };
