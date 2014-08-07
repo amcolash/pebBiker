@@ -15,12 +15,52 @@ var distance = {
   mileConv : 0.621371, // conversion factor from km to mi
   ftConv : 3.28084, // conversion factor from m to ft
   
+
+  getBearing: function(startLat,startLong,endLat,endLong){
+    startLat = this.deg2rad(startLat);
+    startLong = this.deg2rad(startLong);
+    endLat = this.deg2rad(endLat);
+    endLong = this.deg2rad(endLong);
+  
+    var dLong = endLong - startLong;
+  
+    var dPhi = Math.log(Math.tan(endLat/2.0+Math.PI/4.0)/Math.tan(startLat/2.0+Math.PI/4.0));
+    if (Math.abs(dLong) > Math.PI){
+      if (dLong > 0.0)
+         dLong = -(2.0 * Math.PI - dLong);
+      else
+         dLong = (2.0 * Math.PI + dLong);
+    }
+  
+    return (this.rad2deg(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+  },
+  
+  getSpeed: function(tempDist, prevTime, currTime) {
+    var elapsedTime = (currTime - prevTime) / 1000; // seconds since previous refresh
+    if (elapsedTime === 0) { elapsedTime = 1; }
+    return tempDist / elapsedTime;
+  },
+    
+  toMiles: function(speed) {
+    return speed * this.mileConv;
+  },
+  
+  toFeet: function(height) {
+    return height * this.ftConv;
+  },
   
   // convert degrees to radians
   deg2rad : function(deg) {
     var rad = deg * Math.PI/180; // radians = degrees * pi/180
     return rad;
   },
+    
+  // convert radians to degrees
+  rad2deg : function(rad) {
+    var deg = deg * 180/Math.PI; // degrees = radians * 180/pi
+    return deg;
+  },
+  
     
   // round to given precision (decimal places)
   round : function(num, precision) {
@@ -58,14 +98,6 @@ var distance = {
   
     // display the result
     return dist;
-  },
-  
-  toMiles: function(speed) {
-    return speed * this.mileConv;
-  },
-  
-  toFeet: function(height) {
-    return height * this.ftConv;
   }
 
 };

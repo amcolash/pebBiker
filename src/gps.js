@@ -9,6 +9,8 @@ var currLat = -1;
 var currLong = -1;
 var totalDistance = 0;
 var heading = -1;
+var prevTime = -1;
+var currTime = -1;
 var speed = -1;
 var altitude = -1;
 var accuracy = -1;
@@ -31,7 +33,7 @@ var gps = {
   startTrack : function(card) {
     myCard = card;
     if (navigator.geolocation) {
-      console.log("Starting tracking");
+      console.log("Updating location");
       navigator.geolocation.getCurrentPosition(this.showPosition, this.showError, locationOptions);
     } else {
       myCard.body("Geolocation is not supported by this device.");
@@ -48,8 +50,8 @@ var gps = {
     console.log("-----------------------------------------------");
     console.log("Current Latitude: " + position.coords.latitude); 
     console.log("Current Longitude: " + position.coords.longitude);
-    console.log("Speed: " + position.coords.speed);
-    console.log("Heading: " + position.coords.heading);
+    console.log("Speed (From GPS): " + position.coords.speed);
+    console.log("Heading (From GPS): " + position.coords.heading);
     console.log("Altitude: " + position.coords.altitude);
     console.log("Accuracy: " + position.coords.accuracy);
     console.log("-----------------------------------------------");
@@ -59,19 +61,22 @@ var gps = {
     currLat = position.coords.latitude;
     currLong = position.coords.longitude;
     
-    
+    prevTime = currTime;
+    currTime = new Date().getTime();
     
     /* Only used on reset of data  to prevent problems with distance*/
-    if (prevLat === -1 && prevLong === -1) {
+    if (prevLat === -1 || prevLong === -1 || prevTime === -1) {
       prevLat = currLat;
       prevLong = currLong;
+      prevTime = currTime;
     }
     
     // Calculate distance from previous location to current location
-    totalDistance += distance.findDistance(prevLat, prevLong, currLat, currLong, imperial);
+    var tempDist = distance.findDistance(prevLat, prevLong, currLat, currLong, imperial);
+    totalDistance = distance.round(tempDist + totalDistance, 3); // Double rounding to make sure
     
-    heading = position.coords.heading;
-    speed = position.coords.speed;
+    heading = distance.getBearing(prevLat, prevLong, currLat, currLong);
+    speed = distance.getSpeed(tempDist, prevTime, currTime);
     altitude = position.coords.altitude;
     accuracy = position.coords.accuracy;
     

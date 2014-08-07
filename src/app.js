@@ -34,6 +34,7 @@ var pause = function(main) {
   main.title("pebBiker");
   // Get data from watch and update the UI
   //gps.clearTrack();
+  console.log('Tracking paused');
 };
 
 var update = function(main) {
@@ -68,7 +69,7 @@ main.on('click', 'up', function(e) {
         subtitle: 'Clear current ride'
       }, {
         title: 'Units',
-        subtitle: 'Currently: ' + getUnits()
+        subtitle: 'Current: ' + getUnits()
       }, {
         title: 'Hard Reset',
         subtitle: 'Reset all data (if things seem broken)'
@@ -88,8 +89,8 @@ main.on('click', 'up', function(e) {
       }
       if (e.item === 2) {
         console.log('3rd item');
-        imperial = !imperial;
-        menu.item(0, 2, { title: 'Units', subtitle: 'Currently: ' + getUnits() });
+        gps.imperial = !gps.imperial;
+        menu.item(0, 2, { title: 'Units', subtitle: 'Current: ' + getUnits() });
       }
       if (e.item === 3) {
         console.log('4th item');
@@ -104,5 +105,6 @@ main.on('click', 'down', function(e) {
 });
 
 main.on('click', 'select', function(e) {
+  console.log("Starting tracking");
   update(main);
 });
