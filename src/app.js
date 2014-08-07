@@ -11,7 +11,7 @@ var gps = require('gps');
 
 // Global variable of the timer that is used in tracking
 var timer;
-var pollTime = 5;
+var pollTime = 20;
 // convert seconds to ms
 pollTime *= 1000;
 

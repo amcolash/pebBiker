@@ -24,6 +24,7 @@ var locationOptions = {
 //var tracker;
 
 var count = 0;
+var path = '';
 
 var imperial = true;
 var units = [];
@@ -46,20 +47,14 @@ var gps = {
   //},
   
   showPosition : function(position) {
-    // Log raw data
-    console.log("-----------------------------------------------");
-    console.log("Current Latitude: " + position.coords.latitude); 
-    console.log("Current Longitude: " + position.coords.longitude);
-    console.log("Speed (From GPS): " + position.coords.speed);
-    console.log("Heading (From GPS): " + position.coords.heading);
-    console.log("Altitude: " + position.coords.altitude);
-    console.log("Accuracy: " + position.coords.accuracy);
-    console.log("-----------------------------------------------");
-    
+   
     prevLat = currLat;
     prevLong = currLong;
     currLat = position.coords.latitude;
     currLong = position.coords.longitude;
+    
+    path = '[' + currLat + ',' + currLong + '],' + path;
+    console.log('path: ' + path);
     
     prevTime = currTime;
     currTime = new Date().getTime();
@@ -80,6 +75,7 @@ var gps = {
     altitude = position.coords.altitude;
     accuracy = position.coords.accuracy;
     
+   
     // Set heading to unknown("?") instead of "-1"
     if (heading === -1) {
       heading = "?";
@@ -110,6 +106,16 @@ var gps = {
     }
     
     altitude = distance.round(altitude, 2);
+    
+    // Log final data
+    console.log("-----------------------------------------------");
+    console.log("Current Latitude: " + currLat); 
+    console.log("Current Longitude: " + currLong);
+    console.log("Speed (From GPS): " + speed);
+    console.log("Heading (From GPS): " + heading);
+    console.log("Altitude: " + altitude);
+    console.log("Accuracy: " + accuracy);
+    console.log("-----------------------------------------------");
     
     // Update UI
     count++;
