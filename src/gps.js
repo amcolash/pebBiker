@@ -13,27 +13,53 @@ var speed = -1;
 var altitude = -1;
 var accuracy = -1;
 
+var locationOptions = {
+  timeout: 15000,
+  maximumAge: 6000,
+  enableHighAccuracy: true
+};
+
+//var tracker;
+
+var count = 0;
+
 var imperial = true;
 var units = [];
 
 var gps = {
 
-  getLocation : function(card) {
-    console.log("getLocation");
+  startTrack : function(card) {
     myCard = card;
     if (navigator.geolocation) {
-      myCard.title("Updating");
-      navigator.geolocation.getCurrentPosition(this.showPosition, this.showError);
+      console.log("Starting tracking");
+      navigator.geolocation.getCurrentPosition(this.showPosition, this.showError, locationOptions);
     } else {
       myCard.body("Geolocation is not supported by this device.");
     }
   },
   
+  //clearTrack : function() {
+    //console.log("Stopping tracking");
+    //tracker.clearWatch();
+  //},
+  
   showPosition : function(position) {
+    // Log raw data
+    console.log("-----------------------------------------------");
+    console.log("Current Latitude: " + position.coords.latitude); 
+    console.log("Current Longitude: " + position.coords.longitude);
+    console.log("Speed: " + position.coords.speed);
+    console.log("Heading: " + position.coords.heading);
+    console.log("Altitude: " + position.coords.altitude);
+    console.log("Accuracy: " + position.coords.accuracy);
+    console.log("-----------------------------------------------");
+    
     prevLat = currLat;
     prevLong = currLong;
     currLat = position.coords.latitude;
     currLong = position.coords.longitude;
+    
+    
     
     /* Only used on reset of data  to prevent problems with distance*/
     if (prevLat === -1 && prevLong === -1) {
@@ -56,7 +82,7 @@ var gps = {
     
     // Set speed to 0 if not moving as -1 is returned normally
     if (speed === -1) {
-      speed = 0;
+      speed = "?";
     } else {
       // Convert m/s to km/s
       speed /= 1000;
@@ -80,14 +106,9 @@ var gps = {
     
     altitude = distance.round(altitude, 2);
     
-    // Log information and update UI
-    console.log("Current Latitude: " + currLat); 
-    console.log("Current Longitude: " + currLong);
-    console.log("Speed: " + speed);
-    console.log("Heading: " + heading);
-    console.log("Altitude: " + altitude);
-    console.log("Accuracy: " + accuracy);
-    myCard.title("pebBiker");
+    // Update UI
+    count++;
+    myCard.title("pebBiker: " + count);
     myCard.body("Dist: " + totalDistance + " " + units[1] + "\nAlt: " + altitude + " " + units[0] +
                   "\nHeading: " + heading + "\nSpeed: " + speed + " " + units[2]);
   },

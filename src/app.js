@@ -11,13 +11,51 @@ var gps = require('gps');
 
 // Global variable of the timer that is used in tracking
 var timer;
+var pollTime = 5;
+// convert seconds to ms
+pollTime *= 1000;
+
+
+/* Helper functions before the main app */
+var getUnits = function() {
+  if (gps.imperial) {
+    return 'imperial';
+  } else {
+    return 'metric';
+  }
+};
+
+var pause = function(main) {
+  // cloud pebble complains about this, but is a valid function
+  clearTimeout(timer);
+  
+  // change icon to let user know that if  tracking was happening, it has now stopped
+  main.icon('images/menu_icon.png');
+  main.title("pebBiker");
+  // Get data from watch and update the UI
+  //gps.clearTrack();
+};
+
+var update = function(main) {
+  // cloud pebble complains about this, but is a valid function
+  clearTimeout(timer);
+  
+  main.title("Tracking");
+  // change icon to let the user know that tracking is happening
+  main.icon('images/menu_icon_inv.png');
+  gps.startTrack(main);
+  // Set timer to update every x seconds
+  timer = setTimeout(function() { update(main); }, pollTime);
+};
+
+/* End helper functions*/
 
 /* Main function and intiialization */
 var main = new UI.Card({
   title: 'pebBiker',
   icon: 'images/menu_icon.png',
   //subtitle: 'Hello World!',
-  body: '\nPress down button to update, select to track'
+  body: '\nPress up button for options, select to track, down to stop tracking'
 });
 
 main.show();
@@ -26,38 +64,45 @@ main.on('click', 'up', function(e) {
   var menu = new UI.Menu({
     sections: [{
       items: [{
-        title: 'pebBiker',
-        icon: 'images/menu_icon.png',
-        subtitle: 'Can do Menus'
+        title: 'Reset',
+        subtitle: 'Clear current ride'
       }, {
-        title: 'Second Item',
-        subtitle: 'Subtitle Text'
+        title: 'Units',
+        subtitle: 'Currently: ' + getUnits()
+      }, {
+        title: 'Hard Reset',
+        subtitle: 'Reset all data (if things seem broken)'
       }]
     }]
   });
   
   menu.on('select', function(e) {
     console.log('Selected item: ' + e.section + ' ' + e.item);
+    if (e.section === 0) {
+      if (e.item === 0) {
+        console.log('1st item');
+        gps.totalDistance = 0;
+      }
+      if (e.item === 1) {
+        console.log('2nd item');
+      }
+      if (e.item === 2) {
+        console.log('3rd item');
+        imperial = !imperial;
+        menu.item(0, 2, { title: 'Units', subtitle: 'Currently: ' + getUnits() });
+      }
+      if (e.item === 3) {
+        console.log('4th item');
+      }
+    }
   });
   menu.show();
 });
 
 main.on('click', 'down', function(e) {
-  clearTimeout(timer);
-  main.title("Updating");
-  // Get data from watch and update the UI
-  gps.getLocation(main);
+  pause(main);
 });
 
-var update = function() {
-  main.title("Tracking");
-  timer = setTimeout(function() {
-    gps.getLocation(main);
-    update();
-  }, 5000);
-};
-
 main.on('click', 'select', function(e) {
-  clearTimeout(timer);
-  update();
+  update(main);
 });

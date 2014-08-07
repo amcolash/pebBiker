@@ -13,7 +13,7 @@ var distance = {
   Rk : 6373, // mean radius of the earth (km) at 39 degrees from the equator
   
   mileConv : 0.621371, // conversion factor from km to mi
-  ftConv : 0.3048, // conversion factor from m to ft
+  ftConv : 3.28084, // conversion factor from m to ft
   
   
   // convert degrees to radians
@@ -49,9 +49,11 @@ var distance = {
   
     // round the results down to the nearest 1/1000
     if (imperial) {
-      dist = this.round(dm, 2);
+      dist = this.round(dm, 3);
+      if (dist < 0.003) dist = 0;
     } else {
-      dist = this.round(dk, 2);
+      dist = this.round(dk, 3);
+      if (dist < 0.002) dist = 0;
     }
   
     // display the result
